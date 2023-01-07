@@ -5,10 +5,10 @@ Plugin for gqlgen that allows it to be used with AWS AppSync
 ## Usage
 
 Since it is a plugin you'll need to run gqlgen with your own entrypoints. This process is
-futher documented over here: https://gqlgen.com/reference/plugins/
+documented more in-depth over here: https://gqlgen.com/reference/plugins/
 
 For this plugin, your entrypoint will look something like the code below. It MUST output
-in the same directory and package as the "exec" base plugin of gqlgen. It is because this
+in the same directory and package as the "exec" base plugin of gqlgen. This is because the
 plugin uses private methods that base gqlgen generates.
 
 ```Go
