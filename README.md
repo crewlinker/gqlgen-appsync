@@ -61,12 +61,17 @@ type (
 	// Input describes the input of a direct BATCH call from AWS AppSync that
 	// we need for the generated resolve call to work.
 	Input = []struct {
+        // Argumens should be presented as a map
 		Arguments map[string]any  `json:"arguments"`
+
+        // NOTE source will be decoded inside the generated code. Used for non-root resolvers
+        // to present the "parent" object to the resolver at the time of calling.
 		Source    json.RawMessage `json:"source"`
 		Info      struct {
+
+            // From the info, we just need the "fieldName" and the "parentTypeName"
 			FieldName           string `json:"fieldName"`
 			ParentTypeName      string `json:"parentTypeName"`
-			SelectionSetGraphQL string `json:"selectionSetGraphQL"`
 		} `json:"info"`
 	}
 
