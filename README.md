@@ -97,6 +97,8 @@ func (h Handler) Handle(ctx context.Context, in Input) (out Output, err error) {
 			return nil, err
 		}
 
+        // NOTE: for batch calls we need to present the data on a "data" field. For
+        // non-batch calls this works differently. Check the AWS docs for this.
 		out = append(out, map[string]any{
 			"data": data,
 		})
