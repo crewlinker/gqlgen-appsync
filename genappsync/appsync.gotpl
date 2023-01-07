@@ -1,0 +1,67 @@
+{{ reserveImport "fmt"  }}
+{{ reserveImport "context"  }}
+{{ reserveImport "encoding/json"  }}
+{{ reserveImport "github.com/99designs/gqlgen/graphql" }}
+
+// ResolverFields list all type and field names that are marked as resolvers. This
+// is usefull to automate hooking up lambda functions to them in AppSync.
+var ResolverFields = []string{
+{{ range $object := .Objects -}}
+	{{- if $object.HasResolvers -}}
+        {{ range $field := $object.Fields -}}
+            {{- if $field.IsResolver -}}
+                "{{$object.Name}}.{{$field.Name}}",
+            {{ end -}}
+        {{ end -}}
+	{{ end -}}
+{{ end }}
+}
+
+// AppSyncResolve uses the input of a direct appsync resolver and calls the correct method the implementation.
+// The return value can be used directly as the result data to be returned to AppSync.
+func AppSyncResolve(ctx context.Context, rr ResolverRoot, typeName, fieldName string, args map[string]any, parent []byte) (any, error) {
+    ec := executionContext{nil, &executableSchema{resolvers: rr}}
+
+    switch {
+{{ range $object := .Objects -}}
+	{{- if $object.HasResolvers -}}
+        {{ range $field := $object.Fields -}}
+            {{- if $field.IsResolver -}}
+		        case typeName == "{{$object.Name}}" && fieldName == "{{$field.Name}}":
+                    {{ range $arg := $field.Args -}}
+                    {{$arg.VarName}}, err := ec.{{$arg.TypeReference.UnmarshalFunc}}(ctx,args["{{$arg.Name}}"])
+                    if err != nil {
+                        return nil, fmt.Errorf("failed to unmarshal argument '{{$arg.Name}}': %w", err)
+                    }
+                    {{ end -}}
+                    
+                    {{- if not $object.Root}}
+                    var obj {{ goModelName $object.Name }}
+                    if err = json.Unmarshal(parent, &obj); err != nil {
+                        return nil, fmt.Errorf("failed to unmarshal parent for nested resolver: %w", err)
+                    }
+                    {{end -}}
+                    
+                    return rr.{{$object.Name}}().{{$field.GoFieldName}}(ctx, 
+                        {{- if not $object.Root }}&obj,{{end -}}
+                        {{- if $field.Args}}{{range $arg := $field.Args}}{{$arg.VarName}},{{end}}{{end -}})
+            {{ end -}}
+        {{ end -}}
+	{{ end -}}
+{{ end }}
+    default:
+        return nil,fmt.Errorf("no resolver for %s.%s", typeName, fieldName)
+    }
+}
+
+{{ range $object := .Objects -}}
+    {{- if not $object.BuiltIn }}{{- if not $object.Root }}
+    // MarshalJSON implements custom marshalling such that the graphql __typename is always returned. This 
+    // is required since AppSync won't ask for this field when it needs it to determine the type for 
+    // unions and interfaces.
+    func (this {{ goModelName $object.Name }}) MarshalJSON() ([]byte, error){
+        type V {{$object.Name}}
+        return json.Marshal(struct{V; TypeName string `json:"__typename"`}{V(this), {{$object.Name|quote}} })
+    }
+    {{ end }}{{end}}
+{{ end -}}

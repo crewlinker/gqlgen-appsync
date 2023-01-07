@@ -1,0 +1,21 @@
+schema:
+  - example.graphql
+exec:
+  filename: graph/exec_gen.go
+  package: graph
+model:
+  filename: graph/models_gen.go
+  package: graph
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.IntID
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Sink:
+    fields:
+      other:
+        resolver: true
