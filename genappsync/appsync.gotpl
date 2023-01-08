@@ -20,7 +20,9 @@ var ResolverFields = []string{
 // AppSyncResolve uses the input of a direct appsync resolver and calls the correct method the implementation.
 // The return value can be used directly as the result data to be returned to AppSync.
 func AppSyncResolve(ctx context.Context, rr ResolverRoot, typeName, fieldName string, args map[string]any, parent []byte) (any, error) {
+    {{ if $.HasResolverArguments }}
     ec := executionContext{nil, &executableSchema{resolvers: rr}}
+    {{ end }}
 
     switch {
 {{ range $object := .Objects -}}

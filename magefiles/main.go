@@ -20,6 +20,25 @@ func Test() error {
 		"--trace", "--junit-report=test-report.xml", "./...")
 }
 
+// E2E performs an end-to-end test
+func E2E(env, instance string) error {
+	if err := Graph.Gen(Graph{}); err != nil {
+		return err
+	}
+	if err := Infra.Build(Infra{}); err != nil {
+		return err
+	}
+	if err := Infra.Deploy(Infra{}, env, instance); err != nil {
+		return err
+	}
+
+	os.Chdir("..") // back to root after infra command
+	if err := Test(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // mustBeInRoot checks that the command is run in the project root
 func mustBeInRoot() {
 	if _, err := os.Stat("go.mod"); err != nil {

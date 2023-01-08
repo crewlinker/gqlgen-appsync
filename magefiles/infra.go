@@ -51,6 +51,7 @@ func (Infra) Deploy(env, instance string) error {
 		"--require-approval", "never",
 		"--profile", profile,
 		"--context", "instance="+instance,
+		"--outputs-file", filepath.Join("cdk.outputs.json"),
 	)
 }
 

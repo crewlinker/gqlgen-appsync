@@ -116,9 +116,15 @@ func main() {
 
 ## Backlog
 
+- [x] MUST fix bug with uncompilable source for schema without resolver arguments
 - [ ] MUST add ci for e2e testing of generated resolver code
+- [ ] SHOULD add test case for uncompilable source for schema without resolver arguments (require tests with multiple schemas)
+- [ ] SHOULD test all the AWS scalars, and describe as feature
+- [ ] SHOULD test with funky type, arg and field names (identifiers), camelCase, snake_case, etc
+- [ ] SHOULD come with an input event struct that can be used (because aws-lambda-go/events doesn't provide it)
 - [ ] SHOULD test that it works with all AWS scalar values
 - [ ] SHOULD test that it works with AWS appsync subscription directives
+- [ ] SHOULD test that it works with auth directives
 - [ ] SHOULD setup e2e test with deployed graphql api and our example resolver implementation
 - [ ] SHOULD test that it works if the model is generated in a different directory
 - [ ] SHOULD test that it works with errors inside of the batch, instead of returning from lambda

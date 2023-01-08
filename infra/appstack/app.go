@@ -56,7 +56,7 @@ func WithAppSync(s constructs.Construct, logRetention awslogs.RetentionDays) {
 		Definition: jsii.String(string(def)),
 	})
 
-	awsappsync.NewCfnApiKey(s, jsii.String("GraphApiKey"), &awsappsync.CfnApiKeyProps{
+	key := awsappsync.NewCfnApiKey(s, jsii.String("GraphApiKey"), &awsappsync.CfnApiKeyProps{
 		ApiId:       api.AttrApiId(),
 		Description: jsii.String("Main API Key"),
 		ApiKeyId:    jsii.String("MainApiKey"),
@@ -82,4 +82,11 @@ func WithAppSync(s constructs.Construct, logRetention awslogs.RetentionDays) {
 			MaxBatchSize:   jsii.Number(10), // enable batching for direct lambda
 		}).AddDependency(schema)
 	}
+
+	awscdk.NewCfnOutput(s, jsii.String("GraphQlUrl"), &awscdk.CfnOutputProps{
+		Value: api.AttrGraphQlUrl(),
+	})
+	awscdk.NewCfnOutput(s, jsii.String("GraphQlApiKey"), &awscdk.CfnOutputProps{
+		Value: key.AttrApiKey(),
+	})
 }

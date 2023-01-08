@@ -1,40 +1,5 @@
-# define some scalars that we use
-scalar AWSTimestamp
-
-# Node interface standardizes global identification
-interface Node {
-  id: ID!
-}
-
-# Profile describes a profile on our platform
-type Profile implements Node {
-  id: ID!
-  email: String
-  phone_number: String
-  other_node: Node!
-}
-
-# Query interface
+# Top-level query interface
 type Query {
+  # Test scalar fields
   version: String!
-  profile: Profile!
-  anotherProfile(name: String!): Profile!
-  node(id: ID!): Node
-  kitchenSink(foo: String!, bar: Bar!): Sink!
-  sinksOrProfiles: [ProfileOrSink]
 }
-
-type Mutation {
-  addSink(name: String!): Sink!
-}
-
-type Sink {
-  name: String
-  other(code: Bar!): Sink!
-}
-
-input Bar {
-  nr: Float
-}
-
-union ProfileOrSink = Profile | Sink
